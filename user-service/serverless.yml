@@ -35,6 +35,7 @@ functions:
           method: post
   profile:
     handler: app/handler.Profile
+    timeout: 30
     events:
       - httpApi:
           path: /user

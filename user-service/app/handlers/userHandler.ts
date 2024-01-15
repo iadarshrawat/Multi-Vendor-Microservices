@@ -31,14 +31,16 @@ export const Verify = middy ((event: APIGatewayProxyEventV2)=>{
         return service.VerifyUser(event);
     }
     else {
-        service.ResponseWithError(event);
+        return service.ResponseWithError(event);
     }
 })
 
-export const Profile = async (event: APIGatewayProxyEventV2)=>{
+export const Profile = middy ((event: APIGatewayProxyEventV2)=>{
 
     // post put get
     const httpMethod = event.requestContext.http.method.toLowerCase();
+
+    console.log("check 1")
 
     if(httpMethod === "post") {
         return service.CreateProfile(event);
@@ -50,11 +52,11 @@ export const Profile = async (event: APIGatewayProxyEventV2)=>{
         return service.GetProfile(event);
     }
     else {
-        return ErrorResponse(404, "request method is not supported")
+        return service.ResponseWithError(event);
     }
-}
+})
 
-export const Cart = async (event: APIGatewayProxyEventV2)=>{
+export const Cart = middy ((event: APIGatewayProxyEventV2)=>{
 
     // post put get
     const httpMethod = event.requestContext.http.method.toLowerCase();
@@ -69,11 +71,11 @@ export const Cart = async (event: APIGatewayProxyEventV2)=>{
         return service.GetCart(event);
     }
     else {
-        return ErrorResponse(404, "request method is not supported")
+        return service.ResponseWithError(event);
     }
-}
+})
 
-export const Payment = async (event: APIGatewayProxyEventV2)=>{
+export const Payment = middy ((event: APIGatewayProxyEventV2)=>{
    // post put get
    const httpMethod = event.requestContext.http.method.toLowerCase();
 
@@ -87,6 +89,6 @@ export const Payment = async (event: APIGatewayProxyEventV2)=>{
        return service.GetPaymentMethod(event);
    }
    else {
-       return ErrorResponse(404, "request method is not supported")
+    return service.ResponseWithError(event);
    }
-}
+})

@@ -12,6 +12,7 @@ import { LoginInput } from "./../models/dto/LoginInput";
 import { GenerateAccessCode, SendVerificationCode } from "../utility/notification";
 import { VerificationInput } from "./../models/dto/UpdateInput";
 import { TimeDifference } from "../utility/dataHelper";
+import { ProfileInput } from "./../models/dto/AddressInput";
 
 @autoInjectable()
 export class UserService {
@@ -85,7 +86,6 @@ export class UserService {
     const {code, expiry} = GenerateAccessCode();
     // save on DB to confirm verification
     await this.repository.updateVerificationCode(payload.user_id, code, expiry);
-    console.log(code, expiry);
     // const response = await SendVerificationCode(code, payload.phone)
     return SuccessResponse({ message: "response code is send to your registered mobile number" });
   }
@@ -126,14 +126,66 @@ export class UserService {
 
   // user Profile
   async CreateProfile(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from createProfile user" });
+
+    try {
+      const token = event.headers.authorization;
+    const payload = await VerifyToken(token);
+    if(!payload) return ErrorResponse(403, "authorization falied"); 
+
+    const input = plainToClass(ProfileInput, JSON.parse(event.body));
+    const error = await AppValidationError(input);
+    if(error) return ErrorResponse(404, error);
+
+    const result = await this.repository.createProfile(payload.user_id, input);
+
+    return SuccessResponse({ message: "Profile created" });
+    } catch (error) {
+      console.log(error);
+        return ErrorResponse(500, error);
+    }
+
   }
+
   async GetProfile(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from GetProfile user" });
+    try {
+      const token = event.headers.authorization;
+    const payload = await VerifyToken(token);
+    if(!payload) return ErrorResponse(403, "authorization falied"); 
+
+    const result = await this.repository.getUserProfile(payload.user_id);
+
+    return SuccessResponse(result);
+    } catch (error) {
+      console.log(error)
+      return ErrorResponse(500, error);
+    }
   }
+
+
+
   async EditProfile(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Edit user" });
+
+    try {
+      const token = event.headers.authorization;
+      const payload = await VerifyToken(token);
+      if(!payload) return ErrorResponse(403, "authorization falied"); 
+
+      const input = plainToClass(ProfileInput, JSON.parse(event.body));
+      const error = await AppValidationError(input);
+      if(error) return ErrorResponse(404, error);
+
+      console.log('check 2')
+
+      const result = await this.repository.editProfile(payload.user_id, input);
+      return SuccessResponse({ message: "profile updated" });
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
+    
   }
+
+
 
   // cart section
   async CreateCart(event: APIGatewayProxyEventV2) {
