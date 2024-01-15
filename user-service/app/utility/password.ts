@@ -33,10 +33,9 @@ export const GetToken = ({ email, user_id, phone, userType }: UserModel) => {
   );
 };
 
-export const VerifyToken = async (
-  token: string
-): Promise<UserModel | false> => {
+export const VerifyToken = async ( token: string ): Promise<UserModel | false> => {
   try {
+    console.log(token)
     if (token !== "") {
       const payload = await jwt.verify(token.split(" ")[1], APP_SECRET);
       return payload as UserModel;
