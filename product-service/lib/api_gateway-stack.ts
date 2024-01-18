@@ -1,50 +1,70 @@
-import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
+import { LambdaIntegration, LambdaRestApi, RestApi } from "aws-cdk-lib/aws-apigateway";
 import { IFunction } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
+import { aws_apigateway } from 'aws-cdk-lib'
+import { Lambda } from "aws-cdk-lib/aws-ses-actions";
 
 interface ApiGatewayStackProps {
     productService: IFunction;
+    categoryService: IFunction;
+    dealsService: IFunction;
+}
+
+interface ResourceType {
+    name: string,
+    methods: string[],
+    child?: ResourceType;
 }
 
 export class ApiGatewayStack extends Construct {
     constructor(scope: Construct, id: string, props: ApiGatewayStackProps){
         super(scope, id);
-        this.addResource("product", props.productService);
+        this.addResource("product", props);
     }
 
-    addResource(serviceName: string, handler: IFunction) {
-        const apgw = new LambdaRestApi(this, `${serviceName}-ApiGtw`, {
-            restApiName: `${serviceName}-Service`,
-            handler,
-            proxy:false,
+    addResource(serviceName: string, {productService, categoryService, dealsService}: ApiGatewayStackProps) {
+
+        const apgw = new aws_apigateway.RestApi(this, `${serviceName}-ApiGtw`);
+
+        this.createEndpoints(productService, apgw, {
+            name: "product", 
+            methods: ['GET', 'POST'], 
+            child:{
+                name:"{id}", 
+                methods: ["GET","PUT","DELETE"]
+            }
+        });
+        this.createEndpoints(categoryService, apgw, {
+            name: "category", 
+            methods: ['GET', 'POST'], 
+            child:{
+                name:"{id}", 
+                methods: ["GET","PUT","DELETE"]
+            }
+        });
+        this.createEndpoints(dealsService, apgw, {
+            name: "deals", 
+            methods: ['GET', 'POST'], 
+            child:{
+                name:"{id}", 
+                methods: ["GET","PUT","DELETE"]
+            }
+        });
+    }
+
+    createEndpoints(handler: IFunction, resource: RestApi, {name, methods, child}: ResourceType) {
+        const lambdaFunction = new LambdaIntegration(handler);
+        const rootResource = resource.root.addResource(name);
+        methods.map((item)=>{
+            rootResource.addMethod(item, lambdaFunction);
         });
 
-        const productResource = apgw.root.addResource("product");
-        productResource.addMethod("GET");
-        productResource.addMethod("POST");
-
-        const productIdResource = productResource.addResource("{id}");
-        productIdResource.addMethod("GET");
-        productIdResource.addMethod("PUT");
-        productIdResource.addMethod("DELETE");
-
-        const categoryResource = apgw.root.addResource("category");
-        categoryResource.addMethod("GET");
-        categoryResource.addMethod("POST");
-
-        const categoryIdResource = categoryResource.addResource("{id}");
-        categoryIdResource.addMethod("GET");
-        categoryIdResource.addMethod("PUT");
-        categoryIdResource.addMethod("DELETE");
-
-        const dealsResources = apgw.root.addResource("deals");
-        dealsResources.addMethod("GET");
-        dealsResources.addMethod("POST");
-
-        const dealsIdResources = dealsResources.addResource("{id}");
-        dealsIdResources.addMethod("GET")
-        dealsIdResources.addMethod("PUT")
-        dealsIdResources.addMethod("DELETE")
+        if(child) {
+            const childResource = rootResource.addResource(child.name);
+            child.methods.map((item)=>{
+                childResource.addMethod(item, lambdaFunction)
+            })
+        }
     }
 
 }
