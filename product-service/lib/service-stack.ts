@@ -36,7 +36,7 @@ import { Runtime } from "aws-cdk-lib/aws-lambda"
             ...nodeJsFunctionProps,
         })
         this.dealsService = new NodejsFunction(this, "dealsLambda", {
-            entry: join(__dirname, "/../src/deals.ts"),
+            entry: join(__dirname, "/../src/deals-api.ts"),
             ...nodeJsFunctionProps,
         })
     }

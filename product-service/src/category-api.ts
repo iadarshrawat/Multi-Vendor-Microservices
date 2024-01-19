@@ -6,7 +6,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     return {
         statusCode: 200,
         body: JSON.stringify({
-            message: "hello from product service",
+            message: "hello from category service",
             path: `${event.path}, ${event.pathParameters}`,
         }),
     }
