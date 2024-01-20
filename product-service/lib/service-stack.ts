@@ -24,7 +24,7 @@ import { Runtime } from "aws-cdk-lib/aws-lambda"
                 BUCKET_NAME: "OUR_BUCKET_ARN",
             },
             runtime: Runtime.NODEJS_20_X,
-            timeout: Duration.seconds(10),
+            timeout: Duration.seconds(15),
         };
 
         this.productService = new NodejsFunction(this, "productLambda", {

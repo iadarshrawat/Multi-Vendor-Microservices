@@ -26,6 +26,7 @@ const formatResponse = (statusCode: number, message: string, data: unknown) =>{
 }
 
 export const SuccessResponse = (data: object) => {
+    console.log("last step tak response")
     return formatResponse(200, "success", data);
 }
 

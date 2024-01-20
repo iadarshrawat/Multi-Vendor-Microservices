@@ -1,5 +1,10 @@
+import { APIGatewayEvent } from "aws-lambda";
 import { ProductRepository } from "../repository/product-repository";
-import { SuccessResponse } from "../utility/response";
+import { ErrorResponse, SuccessResponse } from "../utility/response";
+import { plainToClass } from "class-transformer";
+import { ProductInput } from "../dto/product-input";
+import { AppValidationError } from "../utility/errors";
+import { products } from "../models/product-model";
 
 export class ProductService {
     _repository: ProductRepository;
@@ -7,19 +12,49 @@ export class ProductService {
         this._repository = repository;
     }
 
-    async createProuduct() {
-        return SuccessResponse({msg: "Product Created!"});
+    async createProuduct(event: APIGatewayEvent) {
+
+        const input = plainToClass(ProductInput, JSON.parse(event.body!));
+        const error = await AppValidationError(input);
+        if(error) return ErrorResponse(404, error);
+
+        const data = await this._repository.createProduct(input);
+
+        return SuccessResponse(data);
     }
-    async getProuducts() {
-        return SuccessResponse({msg: "get Products"});
+
+
+    async getProuducts(event: APIGatewayEvent) {
+        const data = await this._repository.getAllProduct();
+        return SuccessResponse(data);
     }
-    async getProuduct() {
-        return SuccessResponse({msg: "get product by id"});
+
+
+    async getProuduct(event: APIGatewayEvent) {
+        const proudctId = event.pathParameters?.id;
+        if(!proudctId) return ErrorResponse(403, "please provide product id");
+        const data =  await this._repository.getProductById(proudctId);
+        return SuccessResponse(data);
     }
-    async editProuduct() {
-        return SuccessResponse({msg: "edit product"});
+
+
+    async editProuduct(event: APIGatewayEvent) {
+        const proudctId = event.pathParameters?.id;
+        if(!proudctId) return ErrorResponse(403, "please provide product id");
+
+        const input = plainToClass(ProductInput, JSON.parse(event.body!));
+        const error = await AppValidationError(input);
+        if(error) return ErrorResponse(404, error);
+
+        input.id = proudctId;
+        const data = await this._repository.updateProduct(input)
+        return SuccessResponse(data);
     }
-    async deleteProuduct() {
+    async deleteProuduct(event: APIGatewayEvent) {
+        const proudctId = event.pathParameters?.id;
+        if(!proudctId) return ErrorResponse(403, "please provide product id");
+
+        await this._repository.deleteProduct(proudctId);
         return SuccessResponse({msg: "delete prouduct"});
     }
 }
