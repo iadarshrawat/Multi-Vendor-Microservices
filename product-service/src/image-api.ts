@@ -1,0 +1,42 @@
+import { APIGatewayEvent, APIGatewayProxyResult, Context } from "aws-lambda";
+import { S3 } from 'aws-sdk'
+import {v4 as uuid} from "uuid"
+require("aws-sdk/lib/maintenance_mode_message").suppress = true;
+
+const S3Client = new S3({
+    region: 'ap-south-1',
+    credentials: {
+        accessKeyId: "AKIA5TFVOJRFYSQ6ZZVM",
+        secretAccessKey: "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"
+    }
+});
+
+export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+
+    // grab the fileName from queryString
+    const file = event.queryStringParameters?.file;
+
+    // give unique name of the file
+    const fileName = `${uuid()}__${file}`;
+
+    // create s3Params
+    const s3Params = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: fileName,
+        ContentType: "image/jpeg",
+    }
+
+    // get Signed URL
+    const url = await S3Client.getSignedUrlPromise("putObject", s3Params);
+    console.log("UPLOAD URL:", s3Params, url)
+
+    // give it back to client for upload image
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            url,
+            Key: fileName
+        }),
+    }
+}
