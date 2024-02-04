@@ -11,6 +11,8 @@ const service = new CategoryService(new CategoryRepository())
 export const handler = middy ((event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     const isRoot = event.pathParameters === null;
 
+    console.log(event.httpMethod.toLocaleLowerCase, " ", isRoot);
+
     switch(event.httpMethod.toLowerCase()) {
         case "post":
             if(isRoot) {
@@ -28,5 +30,5 @@ export const handler = middy ((event: APIGatewayEvent, context: Context): Promis
                 return service.deleteCategory(event);
             }
     }
-    return ErrorResponse(404, "requested method not allowed!");
-}).use(jsonBodyParser());
+    return service.ResponseWithError(event);
+});

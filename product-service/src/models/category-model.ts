@@ -1,23 +1,42 @@
 import mongoose from 'mongoose'
 
 type CategoryModel = {
-    name: string,
-    description: string,
-    category_id: string,
-    image_url: string,
-    price: number,
-    availability: boolean,
+    name: string;
+    nameTranslations: string;
+    parentId: string;
+    subCategories: CategoryDoc[];
+    products: string[];
+    displayOrder: number;
+    imageUrl: string;
 }
 
 export type CategoryDoc = mongoose.Document & CategoryModel;
 
 const categorySchema = new mongoose.Schema({
     name: String,
-    description: String,
-    category_id: String,
-    image_url: String,
-    price: Number,
-    availability: Boolean,
+    nameTranslations: {en: {type: String}, de: {type: String}},
+    parentId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "categories",
+    },
+    subCategories: [
+        {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "categories",
+        },
+    ],
+    products: [
+        {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "products",
+        },
+    ],
+    displayOrder: {
+        type: Number,
+        default: 1
+    },
+    imageUrl: String
+    
 }, {
     toJSON: {
         transform(doc, ret, options) {

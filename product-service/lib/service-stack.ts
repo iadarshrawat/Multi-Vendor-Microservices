@@ -24,7 +24,7 @@ import { Runtime } from "aws-cdk-lib/aws-lambda"
             environment: {
                 BUCKET_NAME: props.bucket, 
             },
-            runtime: Runtime.NODEJS_16_X,
+            runtime: Runtime.NODEJS_20_X,
             timeout: Duration.seconds(15),
         };
 

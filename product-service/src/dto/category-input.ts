@@ -14,3 +14,10 @@ export class CategoryInput {
 
     imageUrl: string;
 }
+
+export class AddItemInput {
+    @Length(3, 128)
+    id: string;
+
+    products: string[];
+}

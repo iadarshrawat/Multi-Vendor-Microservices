@@ -5,6 +5,7 @@ import { plainToClass } from "class-transformer";
 import { ProductInput } from "../dto/product-input";
 import { AppValidationError } from "../utility/errors";
 import { products } from "../models/product-model";
+import { CategoryRepository } from "../repository/category-repository";
 
 export class ProductService {
     _repository: ProductRepository;
@@ -20,6 +21,7 @@ export class ProductService {
 
         const data = await this._repository.createProduct(input);
 
+        await new CategoryRepository().addItem({id: input.category_id, products: [data._id] });
         return SuccessResponse(data);
     }
 
@@ -51,10 +53,12 @@ export class ProductService {
         return SuccessResponse(data);
     }
     async deleteProuduct(event: APIGatewayEvent) {
-        const proudctId = event.pathParameters?.id;
-        if(!proudctId) return ErrorResponse(403, "please provide product id");
+        const productId = event.pathParameters?.id;
+        if(!productId) return ErrorResponse(403, "please provide product id");
 
-        await this._repository.deleteProduct(proudctId);
-        return SuccessResponse({msg: "delete prouduct"});
+        const {category_id, deleteResult} = await this._repository.deleteProduct(productId);
+        await new CategoryRepository().removeItem({id: category_id, products: [productId] });
+
+        return SuccessResponse(deleteResult);
     }
 }
