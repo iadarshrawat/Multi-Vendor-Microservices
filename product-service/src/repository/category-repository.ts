@@ -5,7 +5,6 @@ export class CategoryRepository {
     constructor() {}
 
     async createCategory({name, parentId, imageUrl}: CategoryInput) {
-        console.log("helllo................................................................")
         // create a new Category
         const newCategory = await categories.create({
             name,

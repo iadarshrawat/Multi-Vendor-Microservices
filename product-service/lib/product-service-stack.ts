@@ -11,7 +11,7 @@ export class ProductServiceStack extends cdk.Stack {
 
     const { bucket } = new S3BucketStack(this, "productsImages");
 
-    const { productService, categoryService, dealsService, imageService } = 
+    const { productService, categoryService, dealsService, imageService, queueService} = 
       new ServiceStack(this, "ProductService", { 
         bucket: bucket.bucketName,
       });
@@ -23,6 +23,7 @@ export class ProductServiceStack extends cdk.Stack {
       categoryService,
       dealsService,
       imageService,
+      queueService,
     })
   }
 }

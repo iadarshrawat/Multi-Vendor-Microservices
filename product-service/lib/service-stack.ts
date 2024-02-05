@@ -13,6 +13,7 @@ import { Runtime } from "aws-cdk-lib/aws-lambda"
     public readonly categoryService: NodejsFunction;
     public readonly dealsService: NodejsFunction;
     public readonly imageService: NodejsFunction;
+    public readonly queueService: NodejsFunction;
 
     constructor(scope: Construct, id: string, props: ServiceProps) {
         super(scope, id);
@@ -42,6 +43,10 @@ import { Runtime } from "aws-cdk-lib/aws-lambda"
         })
         this.imageService = new NodejsFunction(this, "imageUploadLambda", {
             entry: join(__dirname, "/../src/image-api.ts"),
+            ...nodeJsFunctionProps,
+        })
+        this.queueService = new NodejsFunction(this, "msgQueueLambda", {
+            entry: join(__dirname, "/../src/message-queue.ts"),
             ...nodeJsFunctionProps,
         })
     }
