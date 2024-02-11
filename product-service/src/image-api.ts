@@ -3,13 +3,7 @@ import { S3 } from 'aws-sdk'
 import {v4 as uuid} from "uuid"
 require("aws-sdk/lib/maintenance_mode_message").suppress = true;
 
-const S3Client = new S3({
-    region: 'ap-south-1',
-    credentials: {
-        accessKeyId: "AKIA5TFVOJRFYSQ6ZZVM",
-        secretAccessKey: "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"
-    }
-});
+const S3Client = new S3();
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
 
