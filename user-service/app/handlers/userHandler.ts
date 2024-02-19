@@ -4,7 +4,7 @@ import { UserService } from "../service/userService";
 import { ErrorResponse } from "../utility/response";
 import middy from "middy";
 import jsonBodyParser from "@middy/http-json-body-parser";
-import { CartService } from "app/service/cartService";
+import { CartService } from "./../service/cartService";
 
 
 const service = container.resolve(UserService);

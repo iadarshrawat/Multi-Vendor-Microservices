@@ -68,7 +68,8 @@ export class ProductService {
     }
 
     // http calls // later state we will convert this thing to RPC & Queue
-    async handleQueueOperation(event: APIGatewayProxyEvent) {
+    async handleQueueOperation(event: APIGatewayEvent) {
+        console.log(event)
         const input = plainToClass(ServiceInput, JSON.parse(event.body!));
         const error = await AppValidationError(input);
         if(error) return ErrorResponse(404, error);
@@ -77,7 +78,5 @@ export class ProductService {
         console.log("PRODUCT DETAILS", {_id, name, price, image_url});
         
         return SuccessResponse({product_id: _id, name, price, image_url});
-
     }
-
 }
