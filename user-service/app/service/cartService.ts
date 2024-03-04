@@ -31,14 +31,12 @@ export class CartService {
 
   // cart section
   async CreateCart(event: APIGatewayProxyEventV2) {
-    console.log(event.body)
     try {
         const token = event.headers.authorization;
         const payload = await VerifyToken(token);
         if(!payload) return ErrorResponse(403, "authorization failed");
         
         const input = plainToClass(CartInput, JSON.parse(event.body));
-        console.log(typeof(input))
         const error = await AppValidationError(input);
         if(error) return ErrorResponse(404, error);
         
