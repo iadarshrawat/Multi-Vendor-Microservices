@@ -1,14 +1,23 @@
-## NodeJS Microservice Master Class
 
-A complete production-level project tutorial of NodeJS Microservice with Serverless technology. Through this series, you will gain professional-level knowledge of build and deploying an enterprise-level application using NodeJS. This series will give you a good understanding of going from scratch to production using AWS infrastructure using infrastructure as code.
+# Multivendor Node.js Backend Application
 
-This series follows the SOLID principle with a CQRS design pattern, and clean architecture and every bit of coding and step is self-explanatory.
+This repository contains the backend code for a multivendor application built using Node.js and deployed on AWS Serverless infrastructure.
 
-### System Design Document:
+## Overview
+This project aims to provide a scalable and efficient backend solution for a multivendor application. It allows multiple vendors to register, manage their products, process orders, and interact with customers seamlessly.
 
-    https://whimsical.com/nodejs-microservice-with-sls-U8x7rhE232reoZEVhH6RrR
+## Features
 
-### Postman Collection:
+`Authentication`: Secure authentication mechanism for vendors.
 
-    https://documenter.getpostman.com/view/8734310/2s9YeBfE9W
+`Product Management`: CRUD operations for managing products.
 
+`Order Processing`: Handling orders from customers.
+
+`Vendor Dashboard`: A dashboard for vendors to monitor sales, manage products, and handle orders.
+
+`Scalability`: Deployed on AWS Serverless architecture, ensuring scalability and cost-effectiveness.
+
+`Security`: Implementing security best practices to protect user data and transactions.
+
+`Logging and Monitoring`: Utilizing AWS monitoring services for tracking system performance and identifying issues.
